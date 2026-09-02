@@ -1,0 +1,10 @@
+repositories:
+  src/ros2_so_arm:
+    type: git
+    url: https://github.com/ros-physical-ai/ros2_so_arm.git
+    version: main
+
+  src/mujoco_ros2_control:
+    type: git
+    url: https://github.com/ros-controls/mujoco_ros2_control.git
+    version: main
