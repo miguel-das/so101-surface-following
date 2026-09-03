@@ -1,0 +1,21 @@
+diff --git a/moveit_ros/visualization/motion_planning_rviz_plugin/src/motion_planning_frame.cpp b/moveit_ros/visualization/motion_planning_rviz_plugin/src/motion_planning_frame.cpp
+index 02cbb6228..000000000 100644
+--- a/moveit_ros/visualization/motion_planning_rviz_plugin/src/motion_planning_frame.cpp
++++ b/moveit_ros/visualization/motion_planning_rviz_plugin/src/motion_planning_frame.cpp
+@@ -72,10 +72,12 @@ MotionPlanningFrame::MotionPlanningFrame(MotionPlanningDisplay* pdisplay, rviz_c
+   connect(ui_->execute_button, SIGNAL(clicked()), this, SLOT(executeButtonClicked()));
+   connect(ui_->plan_and_execute_button, SIGNAL(clicked()), this, SLOT(planAndExecuteButtonClicked()));
+   connect(ui_->stop_button, SIGNAL(clicked()), this, SLOT(stopButtonClicked()));
+-  connect(ui_->start_state_combo_box, SIGNAL(activated(QString)), this, SLOT(startStateTextChanged(QString)));
+-  connect(ui_->goal_state_combo_box, SIGNAL(activated(QString)), this, SLOT(goalStateTextChanged(QString)));
+-  connect(ui_->planning_group_combo_box, SIGNAL(currentIndexChanged(QString)), this,
+-          SLOT(planningGroupTextChanged(QString)));
++  connect(ui_->start_state_combo_box, &QComboBox::textActivated, this,
++          &MotionPlanningFrame::startStateTextChanged);
++  connect(ui_->goal_state_combo_box, &QComboBox::textActivated, this,
++          &MotionPlanningFrame::goalStateTextChanged);
++  connect(ui_->planning_group_combo_box, &QComboBox::currentTextChanged, this,
++          &MotionPlanningFrame::planningGroupTextChanged);
+   connect(ui_->database_connect_button, SIGNAL(clicked()), this, SLOT(databaseConnectButtonClicked()));
+   connect(ui_->save_scene_button, SIGNAL(clicked()), this, SLOT(saveSceneButtonClicked()));
+   connect(ui_->save_query_button, SIGNAL(clicked()), this, SLOT(saveQueryButtonClicked()));

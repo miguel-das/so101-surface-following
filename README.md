@@ -50,11 +50,12 @@ The versions below were verified together on 2026-09-03:
 | MoveIt 2 | `2.15.0` |
 | ros2_control / ros2_controllers | `6.9.0` |
 | MuJoCo vendor | `0.0.9` |
+| `moveit2` visualization base | `0b5a5420630ddce212b69c5b5ddef3928783ce26` (`2.15.0`) |
 | `ros2_so_arm` base | `e166df9d51f43b24da9b99047c6c51c306bda74f` |
 | `mujoco_ros2_control` base | `e6a6160c471a48609fc3f1f7508d7f571e8fa18e` |
 | `feetech_ros2_driver` | `18aed7fb26d3e2b4c0b47762f39d8698b7032422` |
 
-The two patched dependencies are imported at their upstream base revisions and
+The three patched dependencies are imported at their upstream base revisions and
 then modified with the tracked files under `patches/`.
 
 ## Repository layout
@@ -109,7 +110,7 @@ mkdir -p src
 vcs import src < dependencies.repos
 ./scripts/apply_dependency_patches.sh
 rosdep install --from-paths src --ignore-src -r -y
-colcon build --symlink-install
+colcon build --symlink-install --allow-overriding moveit_ros_visualization
 ```
 
 After a successful build:

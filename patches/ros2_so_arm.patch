@@ -21114,6 +21114,49 @@ index d756096..2775453 100644
          )
          for controller in startup_controllers
      ]
+diff --git a/so_arm101_description/control/ros2_controllers.yaml b/so_arm101_description/control/ros2_controllers.yaml
+index c560180..047f060 100644
+--- a/so_arm101_description/control/ros2_controllers.yaml
++++ b/so_arm101_description/control/ros2_controllers.yaml
+@@ -31,3 +31,16 @@ joint_trajectory_controller:
+       - <robot_namespace>elbow_flex_joint
+       - <robot_namespace>wrist_flex_joint
+       - <robot_namespace>wrist_roll_joint
++    constraints:
++      goal_time: 1.0
++      stopped_velocity_tolerance: 0.01
++      shoulder_pan_joint:
++        goal: 0.01
++      shoulder_lift_joint:
++        goal: 0.01
++      elbow_flex_joint:
++        goal: 0.01
++      wrist_flex_joint:
++        goal: 0.01
++      wrist_roll_joint:
++        goal: 0.01
+diff --git a/so_arm101_description/mjcf/so_arm101.xml b/so_arm101_description/mjcf/so_arm101.xml
+index 7dab3b2..8baab5b 100644
+--- a/so_arm101_description/mjcf/so_arm101.xml
++++ b/so_arm101_description/mjcf/so_arm101.xml
+@@ -375,7 +375,7 @@
+                     axis="0 0 1"
+                     name="gripper_joint"
+                     type="hinge"
+-                    range="0.0 1.0"
++                    range="0.0 1.7"
+                     class="sts3215"
+                   />
+                   <inertial
+@@ -447,7 +447,7 @@
+       name="gripper_joint"
+       joint="gripper_joint"
+       forcerange="-3.35 3.35"
+-      ctrlrange="0.0 1.0"
++      ctrlrange="0.0 1.7"
+     />
+   </actuator>
+
 diff --git a/so_arm101_description/package.xml b/so_arm101_description/package.xml
 index 4d7808d..5c5180d 100644
 --- a/so_arm101_description/package.xml
@@ -21596,3 +21639,15 @@ index 9c79762..573cd75 100644
  
          self.robot_description = {
              "robot_description": load_xacro(
+diff --git a/so_arm101_description/launch/controllers_bringup.launch.py b/so_arm101_description/launch/controllers_bringup.launch.py
+index 2775453..da775d9 100644
+--- a/so_arm101_description/launch/controllers_bringup.launch.py
++++ b/so_arm101_description/launch/controllers_bringup.launch.py
+@@ -40,6 +40,7 @@ def make_robot_state_publisher_node(args):
+             namespace=namespace,
+             parameters=[
+                 {"robot_description": robot_description},
++                {"use_sim_time": args.hardware_type == "mujoco"},
+             ],
+         ),
+     ]

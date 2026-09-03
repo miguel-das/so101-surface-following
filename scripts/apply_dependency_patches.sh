@@ -29,3 +29,9 @@ apply_patch_at_revision \
   src/mujoco_ros2_control \
   e6a6160c471a48609fc3f1f7508d7f571e8fa18e \
   patches/mujoco_ros2_control.patch
+
+git -C "${project_root}/src/moveit2" sparse-checkout set moveit_ros/visualization
+apply_patch_at_revision \
+  src/moveit2 \
+  0b5a5420630ddce212b69c5b5ddef3928783ce26 \
+  patches/moveit2.patch

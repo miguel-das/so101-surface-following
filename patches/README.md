@@ -11,6 +11,9 @@ Base: `ros-physical-ai/ros2_so_arm@e166df9d51f43b24da9b99047c6c51c306bda74f`
 - removes SO-100 packages and keeps the SO-101 stack;
 - converts the shared MoveIt configuration to SO-101;
 - fixes controller namespacing and ROS 2 Lyrical dependency metadata;
+- uses the MuJoCo simulation clock for robot state publication;
+- aligns the MuJoCo gripper range with the URDF so the named open state is reachable;
+- gives the arm controller an explicit 0.01 rad goal tolerance and 1 s settling allowance;
 - starts the simulated gripper slightly inside its lower joint limit.
 
 ## `mujoco_ros2_control.patch`
@@ -21,3 +24,11 @@ Base: `ros-controls/mujoco_ros2_control@e6a6160c471a48609fc3f1f7508d7f571e8fa18e
 - selects GLFW's X11 backend under WSLg so the window receives decorations.
 - avoids copying the optional lidar plugin into an apt-owned directory during
   normal overlay builds; standalone `simulate` installation remains opt-in.
+
+## `moveit2.patch`
+
+Base: `moveit/moveit2@0b5a5420630ddce212b69c5b5ddef3928783ce26` (2.15.0)
+
+- imports only `moveit_ros/visualization` through Git sparse checkout;
+- uses Qt 6 typed combo-box signals so changing the MoveIt planning group
+  refreshes and applies its named states.
