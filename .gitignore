@@ -3,3 +3,8 @@ install/
 log/
 __pycache__/
 *.pyc
+
+# External repositories are recreated from dependencies.repos and patches/.
+/src/feetech_ros2_driver/
+/src/mujoco_ros2_control/
+/src/ros2_so_arm/

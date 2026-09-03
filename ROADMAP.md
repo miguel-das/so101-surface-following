@@ -2,11 +2,11 @@
 
 ## 1. Upstream stack and development environment
 
-- [ ] Verify Ubuntu 26.04 / ROS 2 Lyrical compatibility for `ros2_so_arm`, MoveIt 2, ros2_control, ros2_controllers, MuJoCo, and `mujoco_ros2_control`.
-- [ ] Record the verified dependency sources/revisions and native Ubuntu/ROS installation steps.
-- [ ] Add a tracked `dependencies.repos` file and import external ROS repositories without committing their source into this repository.
-- [ ] Build the imported upstream workspace cleanly with colcon and resolve dependencies with rosdep.
-- [ ] Verify the upstream SO-101 description can be visualized in RViz with correct joint names and TF topology.
+- [x] Verify Ubuntu 26.04 / ROS 2 Lyrical compatibility for the required SO-101 paths through `ros2_so_arm`, MoveIt 2, ros2_control, ros2_controllers, MuJoCo, and `mujoco_ros2_control`.
+- [x] Record the verified dependency sources/revisions and native Ubuntu/ROS installation steps.
+- [x] Add a tracked `dependencies.repos` file and patches, and import external ROS repositories without committing their source into this repository.
+- [x] Build the imported upstream workspace cleanly with colcon and resolve dependencies with rosdep.
+- [x] Verify the upstream SO-101 description can be visualized in RViz with correct joint names and TF topology using a repeatable acceptance check.
 
 ## 2. Validate upstream MuJoCo and standard control path
 

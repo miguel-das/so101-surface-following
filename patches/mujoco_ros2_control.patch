@@ -1,0 +1,86 @@
+diff --git a/mujoco_extensions/mujoco_3d_lidar/CMakeLists.txt b/mujoco_extensions/mujoco_3d_lidar/CMakeLists.txt
+index 1fe40b8..f48cf68 100644
+--- a/mujoco_extensions/mujoco_3d_lidar/CMakeLists.txt
++++ b/mujoco_extensions/mujoco_3d_lidar/CMakeLists.txt
+@@ -27,31 +27,26 @@ install(TARGETS mujoco_3d_lidar
+ )
+ install(DIRECTORY include/ DESTINATION include)
+ 
+-# Duplicate the install to be next to the simulate application so this works there, as well.
+-# This is best effort because it may not be writeable...
+-# TODO: Have mujoco_vendor support a writeable plugin directory?
+-cmake_path(SET _mujoco_vendor_prefix NORMALIZE "${mujoco_vendor_DIR}/../../..")
+-find_program(mujoco_SIMULATE
+-  NAMES simulate mujoco-simulate
+-  HINTS "${_mujoco_vendor_prefix}/opt/mujoco_vendor/bin"
+-        "${_mujoco_vendor_prefix}/lib/mujoco_vendor"
+-)
+-if(mujoco_SIMULATE)
++# ros2_control discovers this plugin through the ament resource registered
++# below. Copying it into an apt-owned mujoco_vendor prefix would require root
++# and makes ordinary overlay builds emit a permission error. Keep the optional
++# standalone `simulate` integration explicit instead.
++option(MUJOCO_3D_LIDAR_INSTALL_NEXT_TO_SIMULATE
++  "Also install the plugin beside the standalone MuJoCo simulate executable"
++  OFF)
++if(MUJOCO_3D_LIDAR_INSTALL_NEXT_TO_SIMULATE)
++  cmake_path(SET _mujoco_vendor_prefix NORMALIZE "${mujoco_vendor_DIR}/../../..")
++  find_program(mujoco_SIMULATE
++    NAMES simulate mujoco-simulate
++    HINTS "${_mujoco_vendor_prefix}/opt/mujoco_vendor/bin"
++          "${_mujoco_vendor_prefix}/lib/mujoco_vendor"
++    REQUIRED
++  )
+   cmake_path(SET mujoco_BIN_PATH NORMALIZE ${mujoco_SIMULATE}/..)
+-  install(CODE "
+-    execute_process(
+-      COMMAND cp -f \"\${CMAKE_INSTALL_PREFIX}/lib/${PROJECT_NAME}/mujoco_plugin/libmujoco_3d_lidar.so\"
+-                    \"${mujoco_BIN_PATH}/mujoco_plugin/\"
+-      RESULT_VARIABLE _err)
+-    if(_err)
+-      message(WARNING \"Could not install lidar plugin next to simulate! Manually copy it to ${mujoco_BIN_PATH}/mujoco_plugin/\")
+-    endif()
+-  ")
+-else()
+-  message(WARNING "NO SIMULATE FOUND!\n "
+-    "To use the lidar plugin with simulate, you must manually copy libmujoco_3d_lidar.so "
+-    "into the /mujoco_plugin/ next to the simulate application. Refer to the mujoco_extension "
+-    "documentation for more information.")
++  install(FILES
++    "${CMAKE_CURRENT_BINARY_DIR}/libmujoco_3d_lidar.so"
++    DESTINATION "${mujoco_BIN_PATH}/mujoco_plugin"
++  )
+ endif()
+ 
+ # Optionally export
+diff --git a/mujoco_ros2_control/src/mujoco_simulation.cpp b/mujoco_ros2_control/src/mujoco_simulation.cpp
+index 7caff9c..92cc263 100644
+--- a/mujoco_ros2_control/src/mujoco_simulation.cpp
++++ b/mujoco_ros2_control/src/mujoco_simulation.cpp
+@@ -547,6 +547,15 @@ bool MujocoSimulation::initialize(rclcpp::Node::SharedPtr node, const std::strin
+ 
+   RCLCPP_INFO_EXPRESSION(get_logger(), headless_, "Running in HEADLESS mode.");
+ 
++  // WSLg exposes both Wayland and X11. GLFW prefers Wayland there, but its
++  // windows do not receive the normal WSLg title bar and borders. Select the
++  // XWayland backend before GLFW is initialized so the simulator is decorated.
++  if (!headless_ && std::getenv("WSL_DISTRO_NAME") != nullptr)
++  {
++    glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
++    RCLCPP_INFO(get_logger(), "Running under WSL; using GLFW's X11 backend for window decorations.");
++  }
++
+   // We essentially reconstruct the 'simulate.cc::main()' function here, and
+   // launch a Simulate object with all necessary rendering process/options
+   // attached.
+@@ -611,10 +620,6 @@ bool MujocoSimulation::initialize(rclcpp::Node::SharedPtr node, const std::strin
+         glfwSetWindowIcon(glfwGetCurrentContext(), 1, &icon);
+       }
+ 
+-      // Set glfw window size to max size of the primary monitor
+-      const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+-      glfwSetWindowSize(glfwGetCurrentContext(), mode->width, mode->height);
+-
+       // Hide UI panels programmatically
+       sim_->ui0_enable = false;  // Hide left panel
+       sim_->ui1_enable = false;  // Hide right panel

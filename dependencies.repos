@@ -1,10 +1,15 @@
 repositories:
-  src/ros2_so_arm:
+  ros2_so_arm:
     type: git
     url: https://github.com/ros-physical-ai/ros2_so_arm.git
-    version: main
+    version: e166df9d51f43b24da9b99047c6c51c306bda74f
 
-  src/mujoco_ros2_control:
+  mujoco_ros2_control:
     type: git
     url: https://github.com/ros-controls/mujoco_ros2_control.git
-    version: main
+    version: e6a6160c471a48609fc3f1f7508d7f571e8fa18e
+
+  feetech_ros2_driver:
+    type: git
+    url: https://github.com/JafarAbdi/feetech_ros2_driver.git
+    version: 18aed7fb26d3e2b4c0b47762f39d8698b7032422
