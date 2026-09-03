@@ -1,0 +1,28 @@
+# Project Context
+
+- This project is a research POC for robotic surface following with an SO-101 manipulator.
+- The target capability is raster/serpentine coverage of 3D surfaces at a fixed stand-off distance with the tool axis aligned to the local surface normal.
+- Demonstrations should progress from planar surfaces to curved surfaces and angled or folded surfaces.
+- ROS 2 is the system-level architecture.
+- MuJoCo is the primary simulator, but it is not the application architecture.
+- The intended control boundary is MoveIt 2 / ROS 2 -> ros2_control -> simulated or real hardware.
+- Higher-level surface-following code should not depend on whether the robot is simulated or real.
+- `ros-physical-ai/ros2_so_arm` is the preferred upstream SO-101 ROS stack and should be reused rather than recreated locally when it satisfies the project requirements.
+- `mujoco_ros2_control` is the preferred MuJoCo-to-ros2_control integration and should be reused rather than wrapped in a custom simulator abstraction.
+- Upstream robot description, MoveIt, controller, and hardware-integration functionality should remain upstream dependencies unless a concrete project-specific change is required.
+- The repository should own only project-specific surface-following algorithms, thin integration code, demos, and configuration that cannot sensibly live upstream.
+- Replacing MuJoCo with the real SO-101 should require minimal change above ros2_control.
+- Replacing the SO-101 with another manipulator should not require rewriting surface-following mathematics.
+- The project targets Ubuntu 26.04 and ROS 2 Lyrical, subject to verification of the required upstream dependencies.
+- Prefer ROS-distribution-portable APIs and standard interfaces over Lyrical-specific behavior when practical.
+- Use the Ubuntu system Python used by ROS; do not introduce a separate Python runtime without a demonstrated need.
+- This is a focused research POC, not a general-purpose robotics framework or production platform.
+- Prefer the smallest technically sound solution that advances the current milestone.
+- Do not design abstractions for hypothetical future robots, sensors, simulators, or deployment modes.
+- Prefer mature robotics and numerical libraries over custom implementations.
+- Use ROS-native functionality for ROS concerns and MuJoCo-native functionality for simulator-specific concerns.
+- Prefer standard ROS messages, actions, TF conventions, MoveIt interfaces, and ros2_control controllers when they fit.
+- The project owner has a PhD in robotics and is comfortable with kinematics, dynamics, Jacobians, trajectory generation, control, optimization, transformations, and ROS concepts.
+- Basic robotics concepts do not need explanation unless they affect an engineering decision.
+- MuJoCo is the main practical knowledge gap, so simulator-specific choices should be explicit and easy to inspect.
+- Implementation should proceed one verified milestone at a time.
