@@ -21250,8 +21250,8 @@ index c576fe4..9ad358e 100644
    <group_state name="rest" group="manipulator">
 -    <joint name="elbow_flex_joint" value="1.57" />
 -    <joint name="shoulder_lift_joint" value="-1.75" />
-+    <joint name="elbow_flex_joint" value="1.54" />
-+    <joint name="shoulder_lift_joint" value="-1.745" />
++    <joint name="elbow_flex_joint" value="1.53" />
++    <joint name="shoulder_lift_joint" value="-1.735" />
      <joint name="shoulder_pan_joint" value="0" />
      <joint name="wrist_flex_joint" value="-0.35" />
      <joint name="wrist_roll_joint" value="1.57" />

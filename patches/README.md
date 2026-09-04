@@ -14,7 +14,8 @@ Base: `ros-physical-ai/ros2_so_arm@e166df9d51f43b24da9b99047c6c51c306bda74f`
 - uses the MuJoCo simulation clock for robot state publication;
 - aligns the MuJoCo gripper range with the URDF so the named open state is reachable;
 - gives the arm controller an explicit 0.01 rad goal tolerance and 1 s settling allowance;
-- starts the simulated gripper slightly inside its lower joint limit.
+- starts the simulated gripper slightly inside its lower joint limit;
+- keeps the `rest` named state clear of the joint limits it used to sit on: `elbow_flex_joint` 1.54 -> 1.53 rad (limit 1.54) and `shoulder_lift_joint` -1.745 -> -1.735 rad (limit -1.74533). MuJoCo settles a few 1e-4 rad past a commanded limit, and `CheckStartStateBounds` then rejects every subsequent planning request until `move_group` is restarted.
 
 ## `mujoco_ros2_control.patch`
 
