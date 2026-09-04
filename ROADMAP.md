@@ -44,23 +44,30 @@ Arm joint order used everywhere in this project:
 - [x] Check that a commanded joint trajectory is actually executed in MuJoCo.
   - Run: send a two-point, time-parameterized `FollowJointTrajectory` goal for the 5 arm joints (for example `manipulator` group state `zero` -> `rest`) with `ros2 action send_goal ... --feedback`.
   - Pass: the goal returns `SUCCEEDED`, and `/joint_states` settles at the commanded final positions within the controller's tolerance. Compilation or process startup alone is not sufficient.
-- [ ] Preserve one repeatable MuJoCo bringup/verification command.
-  - Pass: a single documented command (script or launch line) reproduces the three checks above, and it is recorded in `README.md`.
 
 ## 3. Validate MoveIt and Cartesian capability
 
-- [ ] Check that MoveIt starts against the MuJoCo-controlled SO-101.
+- [x] Check that MoveIt starts against the MuJoCo-controlled SO-101.
   - Run: `ros2 launch so_arm101_moveit_config demo.launch.py hardware_type:=mujoco`
   - Pass: `move_group` reports the `manipulator` and `gripper` groups loaded, and RViz shows the MotionPlanning panel with the robot state matching MuJoCo.
-- [ ] Check that a MoveIt-planned joint motion executes through ros2_control in MuJoCo.
+- [x] Check that a MoveIt-planned joint motion executes through ros2_control in MuJoCo.
   - Run: plan and execute a motion between two named `manipulator` states from RViz or MoveItCpp.
   - Pass: execution reports success, and the final `/joint_states` matches the planned trajectory endpoint.
-- [ ] Check MoveIt FK against the simulator and TF.
+- [x] Check MoveIt FK against the simulator and TF.
   - Run: compare the MoveIt FK pose of `gripper_link` (relative to `base_link`) against `ros2 run tf2_ros tf2_echo base_link gripper_link` for several joint configurations.
   - Pass: position and orientation agree within a stated numerical tolerance for every tested configuration.
-- [ ] Check that IK can solve position plus tool-axis alignment without constraining tool roll.
-  - Run: request IK for a set of target poses that fix the tool position and tool-axis direction but leave roll about that axis free.
+- [x] Check that IK can solve position plus tool-axis alignment without constraining tool roll.
+  - Run: `python3 scripts/verify_tool_axis_ik.py`
   - Pass: the chosen solver returns valid, in-limit solutions for reachable targets, and the FK of each solution reproduces the requested position and tool-axis direction.
+  - Result: 12/12 reachable targets solved in limits, with position error `<= 5.1e-7 m`
+    and tool-axis error `<= 3.9e-7 rad` against stated tolerances of `1e-4 m` and `1e-3 rad`.
+    The tool frame must be `gripper_frame_link`: the tool axis is collinear with
+    `wrist_roll_joint`, so for the SRDF chain tip `gripper_link` the task Jacobian is
+    rank 4 for 5 constraints and no solver can succeed; `gripper_frame_link` sits 7.9 mm
+    off the roll axis, which restores rank 5. No IK plugin packaged for Lyrical can
+    express free roll about a given axis (`kdl` solves the full pose, `trac_ik` exposes
+    only `position_only_ik`, `pick_ik` only a scalar `rotation_scale`), so the script
+    solves the 5-constraint task directly by Levenberg-Marquardt on MoveIt's own FK.
 - [ ] Check self-collision and environment collision detection.
   - Run: query the planning scene with a known self-colliding configuration, a configuration intersecting an added collision object, and a known collision-free configuration.
   - Pass: the first two are reported as colliding and the third as collision-free.

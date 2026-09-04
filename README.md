@@ -163,6 +163,36 @@ For interactive inspection, run the underlying demo directly:
 ros2 launch so_arm101_moveit_config demo.launch.py hardware_type:=mock_components
 ```
 
+### Tool-axis IK
+
+The SO-101 `manipulator` group has five joints, so a full 6-DOF pose goal is
+over-determined: full-pose IK and RViz's "Use Cartesian path" fail on this arm
+by construction. Surface following instead fixes the tool position and the tool
+axis and leaves roll about that axis free, which is five constraints for five
+joints. This check launches the mock stack itself and needs no arguments:
+
+```bash
+source /opt/ros/lyrical/setup.bash
+source install/setup.bash
+python3 scripts/verify_tool_axis_ik.py
+```
+
+It reports the task Jacobian rank for both candidate tool frames, solves a
+deterministic set of reachable targets, and confirms that imposing a roll on the
+same targets is rejected. Two results it depends on:
+
+- The tool frame must be `gripper_frame_link`. The tool axis is collinear with
+  `wrist_roll_joint`, so for the SRDF chain tip `gripper_link` wrist_roll changes
+  neither the tool position nor the tool axis and the task Jacobian is rank 4 for
+  5 constraints. `gripper_frame_link` sits 7.9 mm off the roll axis, restoring
+  rank 5.
+- No IK plugin packaged for ROS 2 Lyrical can express free roll about a given
+  axis: `kdl_kinematics_plugin` solves the full pose, `trac_ik` exposes only
+  `position_only_ik` (which frees all three rotations), and `pick_ik` only a
+  scalar `rotation_scale`. The script therefore solves the five-constraint task
+  directly by Levenberg-Marquardt, using MoveIt's `/compute_fk` as the single
+  source of forward kinematics rather than introducing a second robot model.
+
 Do not add Conda, Pixi, pyenv, Poetry, or another Python version unless a concrete dependency later requires a different isolation strategy.
 
 ## Development workflow
